@@ -44,9 +44,10 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void onDataReceived(final byte[] bArr, final int i) {
-        /* Evgenii, This is a place where you get bytes from reader and further
+        /* This is a place where you get bytes from reader and further
         need to decode and extract facility code and card id from those bytes.
         Hex Result from Reader: A523000008490002734EF8B5
+        Binary Result from Reader: 1111111111111111111111111010010110001100100010010010101110011100111011111111111111111111111111111000111111111111111111111111101101010000000000000000000000000000000000000000000000000000
         Card: Proximity 35 bit HID Corporate 1000 format card, 125Mhz
         Expected outcome: Facility Code: 2121 Card ID: 460590
         Some calc online: https://www.brivo.com/card-calculator/
@@ -54,6 +55,14 @@ public class MainActivity extends AppCompatActivity {
         * */
         runOnUiThread(() -> {
             binding.edData.setText(Common.Bytes2HexString(bArr, i));
+            StringBuilder sb = new StringBuilder();
+            for (byte b : bArr) sb.append(Integer.toBinaryString(b));
+            binding.edBitPattern.setText(sb.toString());
+            File path = getApplicationContext().getExternalFilesDir(null);
+            File file = new File(path, "binary.txt");
+            FileOutputStream stream = new FileOutputStream(file);
+            stream.write(sb.toString().getBytes());
+            stream.close();
         });
     }
 
